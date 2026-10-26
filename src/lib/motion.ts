@@ -9,6 +9,14 @@ export function prefersReducedMotion() {
   }
 }
 
+/** カウントアップの途中経過。進捗 t は必ず 0〜1 に収める（負の経過時間でも破綻しない） */
+export function countUpValue(base: number, value: number, elapsedMs: number, durationMs: number) {
+  const t = durationMs <= 0 ? 1 : Math.min(1, Math.max(0, elapsedMs / durationMs));
+  const eased = 1 - Math.pow(1 - t, 3);
+  const v = base + (value - base) * eased;
+  return Number.isInteger(value) ? Math.round(v) : Math.round(v * 10) / 10;
+}
+
 /** 0 → value へ数字が駆け上がる。requestAnimationFrame で動かし、イージングは easeOutCubic */
 export function useCountUp(value: number, durationMs = 900) {
   const reduced = prefersReducedMotion() || typeof requestAnimationFrame === "undefined";
@@ -16,15 +24,17 @@ export function useCountUp(value: number, durationMs = 900) {
   const from = useRef(0);
   useEffect(() => {
     if (reduced) return;
-    const start = performance.now();
     const base = from.current;
+    // 開始時刻は最初のフレームのタイムスタンプで取る。performance.now() と rAF の時刻は
+    // iframe 内やタブが非表示のときに大きくずれることがあり、経過時間が負になると
+    // 「-34480」のような桁外れの値が表示されてしまう。
+    let start: number | null = null;
     let raf = 0;
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / durationMs);
-      const eased = 1 - Math.pow(1 - t, 3);
-      const v = base + (value - base) * eased;
-      setShown(Number.isInteger(value) ? Math.round(v) : Math.round(v * 10) / 10);
-      if (t < 1) raf = requestAnimationFrame(tick);
+      if (start === null) start = now;
+      const elapsed = now - start;
+      setShown(countUpValue(base, value, elapsed, durationMs));
+      if (elapsed < durationMs) raf = requestAnimationFrame(tick);
       else from.current = value;
     };
     raf = requestAnimationFrame(tick);
