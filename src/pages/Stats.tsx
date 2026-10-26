@@ -33,9 +33,9 @@ export function Stats() {
       <div className="card">
         <h3>直近14日の解答数</h3>
         <div className="daily">
-          {daily.map((d) => (
+          {daily.map((d, i) => (
             <div key={d.day} className="d" style={{ height: `${(d.total / max) * 100}%` }} title={`${d.day}：${d.total}問（正解 ${d.correct}）`}>
-              <span style={{ height: d.total ? `${(d.correct / d.total) * 100}%` : 0 }} />
+              <span style={{ height: d.total ? `${(d.correct / d.total) * 100}%` : 0, ["--i" as string]: i }} />
             </div>
           ))}
         </div>
@@ -158,7 +158,7 @@ function TallyTable({ title, rows }: { title?: string; rows: (readonly [string, 
                 </td>
                 <td className="num">{Math.round(r * 100)}%</td>
                 <td>
-                  <div className={`bar ${r >= 0.7 ? "ok" : r >= 0.5 ? "warn" : "ng"}`}>
+                  <div className={`bar animate ${r >= 0.7 ? "ok" : r >= 0.5 ? "warn" : "ng"}`}>
                     <span style={{ width: `${r * 100}%` }} />
                   </div>
                 </td>

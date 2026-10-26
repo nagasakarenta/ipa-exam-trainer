@@ -102,7 +102,7 @@ export function Mock() {
           </button>
         ))}
       </div>
-      <div className="card">
+      <div className="card reveal" style={{ ["--i" as string]: 1 }}>
         <h3>本試験の形式</h3>
         <p className="small">
           {spec.count}問・{spec.minutes}分。分野比率は

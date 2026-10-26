@@ -57,26 +57,26 @@ export function Review() {
         </div>
       </div>
       <div className="kpis">
-        <div className="kpi">
+        <div className="kpi reveal" style={{ ["--i" as string]: 0 }}>
           <div className="v" style={{ color: due.length ? "var(--ng)" : undefined }}>
             {due.length}
           </div>
           <div className="l">今日復習する問題</div>
         </div>
-        <div className="kpi">
+        <div className="kpi reveal" style={{ ["--i" as string]: 1 }}>
           <div className="v">{upcoming}</div>
           <div className="l">7日以内に復習予定</div>
         </div>
-        <div className="kpi">
+        <div className="kpi reveal" style={{ ["--i" as string]: 2 }}>
           <div className="v">{learning}</div>
           <div className="l">学習中</div>
         </div>
-        <div className="kpi">
+        <div className="kpi reveal" style={{ ["--i" as string]: 3 }}>
           <div className="v">{mastered}</div>
           <div className="l">定着（間隔7日以上）</div>
         </div>
       </div>
-      <div className="card" style={{ marginTop: "1rem" }}>
+      <div className="card reveal" style={{ marginTop: "1rem", ["--i" as string]: 4 }}>
         {due.length === 0 ? (
           <div className="empty">{cards.length === 0 ? "まずドリルか模擬試験で問題を解くと、ここに復習が並びます" : "今日の復習は終わっています"}</div>
         ) : (

@@ -129,7 +129,7 @@ export function Drill() {
         ))}
       </div>
 
-      <div className="card">
+      <div className="card reveal" style={{ ["--i" as string]: 1 }}>
         <h3>分野</h3>
         <div className="chips">
           {[...tree.entries()].map(([f, m]) => {

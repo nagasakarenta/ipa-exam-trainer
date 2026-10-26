@@ -4,6 +4,9 @@ import { FIELD_LABEL } from "../data/exams";
 import { formatDuration, score } from "../lib/scoring";
 import { QuestionBody } from "./QuestionBody";
 import { CHOICE_KEYS } from "./choiceKeys";
+import { ScoreRing } from "./ScoreRing";
+import { Confetti } from "./Confetti";
+import { useCountUp } from "../lib/motion";
 
 interface Props {
   answers: QuizAnswer[];
@@ -21,16 +24,20 @@ export function Results({ answers, spec, elapsedSec, judge, onRetryWrong, onBack
     spec ?? { passScore: 600 },
   );
   const wrong = answers.filter((a) => !a.correct);
+  const tone = s.rate >= 0.6 ? "ok" : s.rate >= 0.4 ? "warn" : "ng";
+  const correctShown = useCountUp(s.correct);
   return (
     <div>
+      {judge && s.passed && <Confetti />}
       <div className="card">
         <div className="result-hero">
+          <ScoreRing rate={s.rate} value={Math.round(s.rate * 100)} label="正答率 %" tone={tone} />
           <div>
             <div className="score">
-              {s.correct}
+              {correctShown}
               <small> / {s.total} 問</small>
             </div>
-            <div className="muted small">正答率 {Math.round(s.rate * 100)}%　所要 {formatDuration(elapsedSec)}</div>
+            <div className="muted small">所要 {formatDuration(elapsedSec)}</div>
           </div>
           {judge && (
             <div>
@@ -66,7 +73,7 @@ export function Results({ answers, spec, elapsedSec, judge, onRetryWrong, onBack
                   </td>
                   <td className="num">{Math.round(r * 100)}%</td>
                   <td>
-                    <div className={`bar ${r >= 0.6 ? "ok" : r >= 0.4 ? "warn" : "ng"}`}>
+                    <div className={`bar animate ${r >= 0.6 ? "ok" : r >= 0.4 ? "warn" : "ng"}`}>
                       <span style={{ width: `${r * 100}%` }} />
                     </div>
                   </td>
@@ -86,7 +93,7 @@ export function Results({ answers, spec, elapsedSec, judge, onRetryWrong, onBack
       <div className="card">
         <h2>解答と解説</h2>
         {answers.map((a, i) => (
-          <details key={a.q.id} className="qr" open={!a.correct}>
+          <details key={a.q.id} className="qr" open={!a.correct} style={{ animationDelay: `${Math.min(i, 12) * 40}ms` }}>
             <summary>
               <span className={`mark ${a.correct ? "ok" : "ng"}`}>{a.correct ? "○" : "×"}</span>
               <span className="muted">問{i + 1}</span>

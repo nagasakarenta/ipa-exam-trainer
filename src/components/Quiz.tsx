@@ -129,7 +129,7 @@ export function Quiz({ questions, instantFeedback, timeLimitSec, shuffleChoices,
         </div>
       </div>
 
-      <div className="card">
+      <div className="card q-card" key={q.id}>
         <QuestionMeta q={q} />
         <QuestionBody q={q} />
         <div className="choices">

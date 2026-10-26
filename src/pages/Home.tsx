@@ -4,6 +4,7 @@ import { useProgress } from "../state/context";
 import { isMastered, sortByUrgency } from "../lib/srs";
 import { dailyCounts, streak, tally } from "../lib/stats";
 import { SECTION_LABEL } from "../data/exams";
+import { useCountUp } from "../lib/motion";
 
 export function Home() {
   const { progress } = useProgress();
@@ -23,21 +24,10 @@ export function Home() {
       </div>
 
       <div className="kpis">
-        <div className="kpi">
-          <div className="v">{today.total}</div>
-          <div className="l">今日解いた問題</div>
-        </div>
-        <div className="kpi">
-          <div className="v">{streak(progress.attempts)}日</div>
-          <div className="l">連続学習</div>
-        </div>
-        <div className="kpi">
-          <div className="v" style={{ color: due ? "var(--ng)" : undefined }}>
-            {due}
-          </div>
-          <div className="l">復習が必要な問題</div>
-        </div>
-        <div className="kpi">
+        <Kpi i={0} value={today.total} label="今日解いた問題" />
+        <Kpi i={1} value={streak(progress.attempts)} suffix="日" label="連続学習" />
+        <Kpi i={2} value={due} label="復習が必要な問題" color={due ? "var(--ng)" : undefined} />
+        <div className="kpi reveal" style={{ ["--i" as string]: 3 }}>
           <div className="v">
             {cards.filter(isMastered).length}
             <span className="muted" style={{ fontSize: "0.9rem" }}>
@@ -47,15 +37,15 @@ export function Home() {
           </div>
           <div className="l">定着した問題（間隔7日以上）</div>
         </div>
-        <div className="kpi">
+        <div className="kpi reveal" style={{ ["--i" as string]: 4 }}>
           <div className="v">{all.total ? Math.round((all.correct / all.total) * 100) : "–"}%</div>
           <div className="l">通算正答率（{all.total}問）</div>
         </div>
       </div>
 
       <div className="grid" style={{ marginTop: "1rem" }}>
-        {EXAMS.map((exam) => (
-          <div className="card" key={exam.id}>
+        {EXAMS.map((exam, i) => (
+          <div className="card reveal" key={exam.id} style={{ ["--i" as string]: 5 + i }}>
             <h2>{exam.name}</h2>
             <p className="muted small">{exam.description}</p>
             <table>
@@ -85,7 +75,7 @@ export function Home() {
         ))}
       </div>
 
-      <div className="card" style={{ marginTop: "1rem" }}>
+      <div className="card reveal" style={{ marginTop: "1rem", ["--i" as string]: 7 }}>
         <div className="row between">
           <h2>最近の模擬試験</h2>
           <Link to="/stats">学習記録を見る →</Link>
@@ -121,6 +111,19 @@ export function Home() {
           </table>
         )}
       </div>
+    </div>
+  );
+}
+
+function Kpi({ i, value, label, suffix = "", color }: { i: number; value: number; label: string; suffix?: string; color?: string }) {
+  const shown = useCountUp(value);
+  return (
+    <div className="kpi reveal" style={{ ["--i" as string]: i }}>
+      <div className="v" style={{ color }}>
+        {shown}
+        {suffix}
+      </div>
+      <div className="l">{label}</div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useProgress } from "../state/context";
 import { sortByUrgency } from "../lib/srs";
 
@@ -13,6 +13,7 @@ const LINKS = [
 
 export function Layout() {
   const { progress } = useProgress();
+  const location = useLocation();
   const due = sortByUrgency(Object.values(progress.cards)).length;
   return (
     <div className="app">
@@ -36,7 +37,9 @@ export function Layout() {
         </div>
       </aside>
       <main className="main">
-        <Outlet />
+        <div className="page" key={location.pathname}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );
